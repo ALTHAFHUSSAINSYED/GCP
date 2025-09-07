@@ -1,0 +1,48 @@
+apt and yum are both package managers used to install, update, and remove software on Linux systems, 
+but they are used in different distributions of Linux:
+
+apt (Advanced Package Tool):
+Used in Debian-based distributions, including:
+Debian
+Ubuntu and its derivatives (like Linux Mint, Elementary OS, Pop!_OS, etc.)
+Kali Linux
+Raspbian (on Raspberry Pi devices)
+apt is used to manage .deb (Debian package) files.
+Common commands:
+apt update (to update the package list)
+apt upgrade (to upgrade installed packages)
+apt install <package_name> (to install a package)
+apt remove <package_name> (to remove a package)
+
+yum (Yellowdog Updater Modified):
+Used in Red Hat-based distributions, including:
+Red Hat Enterprise Linux (RHEL)
+CentOS (before it was replaced by CentOS Stream)
+Fedora (though Fedora uses dnf now as the default package manager, yum is still supported)
+Scientific Linux (a derivative of RHEL)
+Oracle Linux
+AlmaLinux and Rocky Linux (as RHEL-compatible alternatives after CentOS Stream's shift)
+yum manages .rpm (RPM package) files.
+Common commands:
+yum update (to update packages)
+yum install <package_name> (to install a package)
+yum remove <package_name> (to remove a package)
+yum list installed (to list installed packages)
+
+*****BOOT STRAP*****
+#/bin/bash
+sudo su -> root-> admin level user
+apt update -> apt is a package manager this command will check for the updates in the server
+apt -y install apache2 -> installing the apache2 server by using package manager apt 
+sudo service apache2 start 
+sudo update-rc.d apache2 enable
+ls /var/www/html -> listing items in the directory
+echo "Hello World!" - > printing hello world! by echo
+echo "Hello World!" > /var/www/html/index.html -> printing and saving the hello world! font in directory which display as the main page in the browser.
+echo $hostname -> getting the value of the variable hostname.
+echo $(hostname -i)
+echo "Hello World from $(hostname)"
+echo "Hello World from $(hostname) $(hostname -i)"
+echo "Hello world from $(hostname) $(hostname -i)" > /var/www/html/index.html
+sudo service apache2 start -> restaring the server will show the latest index.html page in the browser.
+

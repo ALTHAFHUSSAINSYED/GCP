@@ -1,0 +1,908 @@
+Google Cloud currently operates around 39 regions across the globe, 
+providing cloud services to customers in more than 200 countries and territories.
+
+In Google, each region has atleast 3 zones.
+
+Google Compute Engine Services :
+*Instances- (Vms)
+*Instance Templates -> we can launch instances with in seconds based on the template. storing a template will not be charged.
+well creating an instance from it will be charged. we can configure the template indirectly by taking the snapshort of it and making
+changes to it and naming it as the latest version. storing a snapshot will be charged.
+*Managed Instance Groups :- Group of single vm instances managed as a single entity.Managing group of similar Vms
+having similar lifecycle as ONE UNIT.
+->Two Types of Instance Groups are there such as :
+*Managed Instance Group :- Identical Vms Created using a template.
+->It has benfit of AutoScaling,AutoHealing -> if health checks of a particular Vm fails it will replaced by new Vm.
+->Auto Release->replaced by new version automatically.
+->Suports rollout, canary deployments.
+*Unmanaged Instance Group : consists of different configured Vm as a group. where each Vm differs from the other.
+-> It doesn't have a benifit of Auto Scaling,Auto Healing,Auto Release.
+ 
+*Cloud Load Balancing :- GCP offers three types of load balancer.
+->Application load balancer (Layer 7):it is used suitable for http(s) web applications.it is multi-regional LB.
+->Inside the LB we need to choose a backend(Managed instance group) or (bucket)where all traffic receiving from internet to the front-end of LB will 
+redirect to the backend.(2).Host & path rules used to instruct or set rules how would the traffic will be re-directed to the backend.
+(3).Front-end is the LB.whcih consists of the URL link of LB.where all the traffic from internet will enter from it and redirect to backend based
+on the Host & path rules.
+*Proxy protocols LB:-Proxy LB get the requests from a client and they transform it or make changes to it and sends a different request to the backend.
+*Pass Through protocols or LB:send the client request directly to the backend as it is.so client will be able to see all the details of the request.
+which is sent by client as is. and the backend will aslo able to see client's IP address as well.
+->Network load balancer with TCPproxy||TLS||SSLproxy protocols(Layer 4):it is used in the scanerio for high performance appliactions 
+with 100% data resiliency.means no compromise of single bit data loss.it is multi-regional.
+->Network load balancer with UDP protocol (Layer 4): it is used in the scanerio for high performance application.it is okay to loose some bits of data.
+but the transferring speed of the data is very fast.it is a single-region LB.less resiliency.applications directly talk or communicate to network layer.
+*Persistant disc - Network Storage attached to your instance.
+*Sole-tenant-nodes -> if we need a dedicated hardware cluster then we can choose for high security and high availability purpose
+high performance as well.
+->to use sole-tenant-nodes we need to use node group.
+
+->Instances are zonal(Run in a specific zone in a specific region)
+->Images are global.
+->instance templates are global as well as regional. unless using the zonal resources in the template.
+->use Vm manager to manage Os patch updates and managemnts for more Vms.
+
+
+***Compute Engine Machine Families***
+->Machine Families and Machine types are the hardware components of the instances.
+->General Purpose Machine types are (E2,N2,ND2,N1)-Best Price Performance ratio
+Suitable for web and application servers,small-medium databases,Dev environments.
+
+->Memory Optimized workloads are (M1,M2):Ultra high memory workloads.
+Suitable for large in memory databases and in-memory analytics.
+
+->Computer Optimized workloads are (C2):Compute instance workloads: Need more CPU
+Suitable for Gaming Applications.
+
+***Compute Engine Images***
+-> Images are the software and OS components for the instances.
+Two Types Images offered By GCP:
+*Public Images : provided & Maintained by GCP, open source and other third party Vendors.
+*Custom Images : Created by us based on the project requirements.with this we can reduce lunch time of a vm.
+installing Os patches and  software at lunch  of Vm instances increases boot-up time
+by created the custom image with Os patches and software-pre-installed.
+we can create a pre-installed software instance from snapshot,persistant disc of existing vm,storing 
+a file in cloud storage and can be install from it.
+
+****IP-ADDRESSES****
+->A Vm instances has internal ip and external ip.
+-> internal ip has to be used with in the organization. it can't access via internet.
+-> An same internal ip can be assigned to one or more instances or services.
+->whenever something was created in the GCP atleast one internal ip will be created and assigned.
+-> internal ip is free of cost.
+
+->External ip must be unique from one another.
+-> we can access external ip via internet.
+-> it is chargable.it is not free.
+->whenever you the stop and start the services. your external ip will be change.
+->it is optional to have external ip based on the requirement.
+-> it is also known as ephimeral ip address.
+
+->Static External ip is a constant ip dedicated to a particular service.
+->it remains constant and remains whenever you restart the service.
+->it means we have the reserve the ip address.
+->static ip can be a regional and global. whereas for global it has some forwarding rules.
+->preffer only the regional static ip where the vm and static ip should be in the same region.
+-> if we use or not use static ip we will be billed to avoid this we need to detach and release the ip manually.
+
+
+****Discounts****
+->Sustained Discount is applicable to only N1,N2 machine types and have to use more than 25% of a month to get
+20 t0 50% discount. it means the more you use the more discount we will get upto 50%.
+Note:- Vms must be created only from GKE and GCE.
+
+->Commited Use Discount is applicable based on the contract of 1 to 3 years tenure. will get upto 70% discount.
+->Suitable for predictable workloads and needs.
+->it is also only applicable for the instances created  by GKE and GCE.
+
+->Preemptible Vms are cheaper and short-lived and save cost upto 80%.
+->suitable for fault tolerence and not immediate workloads.
+->they will be stopped by GCP anytime within 24 hrs.
+->give warning 30secs before terminating.
+->we can't migrate these Vm's to normal Vm's.
+->they not available always.
+
+->Spot Vms are the latest version of Preemptible Vms.
+->all things are similar to preemptible Vms but for spot Vms there is no maximum runtime.
+whereas for preemptible vms are  maximum runtime is 24 hrs. after 24hrs they will automatically terminated.
+but for spot Vms no fear of termination after 24hrs.
+->can get upto 60-91% of discount.
+
+****Live Migration****
+->by configuring availability policy we can enable or do live migration.
+->it suppports migration from one host to another host in same availability zone.
+->it doesn't support GPU instances and preemptible,spot instances.
+
+****Cloud Monitoring****
+-> for Vm's automatic cloud monitoring is enabled for cpu utilization,network bytes(in/out),
+disc throughtputs/iops.
+->whereas for Memory utilization, disc space utilization we need to install cloud monitoring agents.
+->For Managed Intstance Group monitoring the cpu utilization target,load balancer utilization target
+or any other metric targets will be monitored by the stack driver tool.
+->Stack driver is a monitoring tool provided by GCP.
+
+
+****Gcloud CLI****
+->Gcloud is a CLI tool to manage the GCP offered serices via Cloud shell for instances.
+->Gcloud CLI is a part of Google cloud SDK.
+->Cloud shell has Cloud SDK as well as Code editor also.
+->cloud staorage bcukets - gsutil
+->cloud  big query - bg
+->cloud big table - cbt
+->GKE- kubectl
+
+****Managed Services****
+Every Cloud Provider offer  Managed services such as :
+*IAAS -> Infrastructure as a Service. -> In IAAS we will get an instance to deploy and run application.but we have manage the os updates of the instance.
+deployment,Application code and Runtime environment,configuring LB,Auto Scaling, Application Availability e.t.c
+*PAAS -> Platform as a Service. -> In PAAS everything will tc by provider except Application code. ex:- google App engine.
+*FAAS -> Function as a Service. -> we can build event-driven applications using FAAS.
+*CAAS -> Container as a Service. -> Containers are suitable to deploy and run microservices(Apps).create docker image for each microservice.
+docker image consists of all the requiremnts such as APP runtime,APP code,code dependencies to run microseervices. we can run docker image anywhere
+and can create a container from that image. Docker containers are light weight compared to Vms and they don't have guest Os.
+however on host os  we have a docker runtime environment or engine where we can install or deploy  and run containers directly.and all the containers
+are isloated from one another on the same docker engine.
+*Container orchestration -> if we have many instances for a microservers then we need to control all of the instances.so we use container orchestration.
+with container orchestration we can do auto scaling,auto healing. e.t.c if we need  cluster then need to choose GKE. 
+if no requiremnt of cluster then go with Cloud Run.  
+*SEAS -> Serverless as a Service. -> similar to PAAS.but we don't have any visibility to platform where our app is running.
+just need to tc of Application code. ex:- functions as a services are serverless. gcp offers Google cloud Functions.
+*SAAS -> Software as a service. ->it provides everything including the App code.
+
+****APP ENGINE****
+->Simplest way to deploy and scale  your applications in GCP.
+->In App engine pay per resources you provisioned.
+->it is PAAS.
+->Lesser Responsibility.
+->serverless
+->Lower Responsibility.
+->In this we don't have the right to select the hardware,os.
+
+***APP ENGINE***
+->APP ENVIRONMENT have 2 specified ENVIRONMENTS.
+*Standard and Specified.
+->Standard Environment are suitable for Application run on instances only.
+they run in language specified sand boxes.
+*Flexible Environments are suitable for Application which runs in containers
+
+****GOOGLE KUBERNETES ENGINE****
+->GKE is a managed service by google.It is container orchestration tool.
+*It provides cluster management.we can deploy workloads into cluster and can manage them.
+*It provides all important Container Orchestration features such as :
+*Auto Scaling.
+*Service Discovery
+*Load Balancer
+*self healing
+*zero downtime deployments
+->GKE uses Container-optimized OS,a hardended OS built by Google.
+->Provides support for persistent disc and local ssd's as well
+->GKE has 2 modes such as :
+*Simple Mode -> Kubernetes cluster with node configuration flixibility pay per-node
+*Auto pilot Mode -> it simplifies cluster management.Optimized Kubernetes cluster with a hands-off experience and pay-per-pod. 
+->GKE Cluster has masternode as well as worker nodes.where Master node manages the cluster and worker node run the workloads(pods).
+->Master node is also called as control plane.all the commands run by Master node and create  and run the services in worker nodes.
+->Inside Master node there is a API server which handles all the coommunications for a K8S cluster from nodes and outside.
+->(2).Scheduler is a 2nd component which decides pods to be deployed in a particular worker nodes.
+->(3).Control Manager is a 3rd component.After deploying the pods by the scheduler.we need to manage them.to manage them we need a control Manager.
+it manages the deployments and replicasets.
+->(4).etcd is a distributed database is used for storing the cluster state.
+*Worker Node components -> In workers nodes our deploments(pods) will run.
+->(2).Kubelet-> manages the communication with master node.
+*Types of GKE Clusters :
+->(1).Zonal Cluster -> Zonal clusters of two types such as Single Zonal and Multi Zonal.
+->In single Zonal it is dedicated to only a single zone in a region.it consists of only single control plane 
+and nodes running in the same zone.
+->In Multi Zonal it is dedicated to a single region and it has single control plane running in one zone.but it has nodes running in multiple zones as well.
+->(2).Regional Cluster -> Replicas of Master node(Control plane) runs in different zones of the dedicated region and nodes also run in the same zone where
+master node(control plane) runs in.
+->(3).Private Cluster -> it is specified to a private network. nodes only have internal ip addresses.
+->(4).Alpha Clusters -> These Clusters are created with early features of APIs.these are latest versioned clusters.where we can test and explore new
+features of K8s.
+
+****Kubernetes Pods****
+->Pods are smallest deployable units in Kubernetes.
+->single Pod can contain one or more containers.
+->each pod is assigned by temperory(ephemeral)Ip address.
+->Containers in a specific pod can share the network,volumes(persistant disc),ip,ports of the specific pod.
+->Pod statuses such as failed,running,pending,unknown,succeeded
+
+****Deployments Vs Replicasets****
+*A Deployment is created for each microservices
+->Deployment represents a single Microservice of all versions.
+->Deployment is responsible to shift from one version of microservice to other version of same microservie.
+->Deployment offers near zero downtime or zero down time while shifting from one version to other version of same microservice.
+->shifting or deploying new versions of micro services are nothing but changing the image of the microservice.
+-> Command to deploy new versions -> kubectl set image deployment (specific deployment name) --image(deployment name)=(latest version image value)
+*ReplicaSet -> it ensures that a specific number of pods are running for a specific version of single specific microservice.
+
+****Deployment Vs Service****
+*Kubernetes clusters consits of many deployments and many services as well.
+->Deployments -> A deployment is a single microservice.which is in the form of docker container image and it is wrapped in a pod
+and run on a k8s cluster.
+->Service -> A service is used to expose the deployed microservice(App) to the external world or to internet ot to end-users
+ex:- Load Balancer,Ingress.
+->Ingress is used to exposes the microservices to the end-users via internet.
+->Ingress consists of set of rules. these rules are applicable to a LoadBalancer.by these set of rules Ingress manages the traffic 
+fo microservice from Lb to outside world.
+*K8s services are of three types such as :
+->(1).Clsuter Ip:- you want your microservices only to be available inside the cluster.(intracluster communication)
+->(2).LoadBalancer:-Exposes services to the outside world (internet) or within specific network via LB IP address.
+-> Pods have temporary Ip addresses.if pods of older version microservice are replaced by newer version of microservice.The pods were recreated
+and will get new ip addresses. even through we can access those pods with the same url. it is possible by K8S Loadbalancer service.
+->(3).NodePort:- Exposes services on each node's Ip at a static port(node port).if we have a requirement or need of LB for each microservices
+then creating too many Lb's and managing them will cost more.so, in this situation we can use node port. we can expose all the microservices as a node port
+and we can use ingress to route all the microservices via node port to the external world (internet).
+
+Anthos, Spinnaker, and Istio are all tools and platforms that help in managing, deploying, 
+and optimizing cloud-native applications, but they each have different scopes and focus areas.
+
+*****ANTHOS*****
+->Anthos is a hybrid and multi-cloud application management platform by Google Cloud. It is designed to manage applications and workloads 
+across different environments, whether on-premises, in Google Cloud, or in other cloud providers (like AWS and Azure).
+->Anthos includes Anthos Service Mesh, based on Istio, to provide service-to-service communication management.
+->Anthos is ideal for enterprises that need to run applications across multiple clouds or data centers while maintaining 
+consistent operations, security, and management.
+->Anthos helps to run kubernetes services anywhere.
+->Anywhere on cloud,multi-cloud,on-premises,
+->we can deploy our workloads to anthos cluster by cloud run
+
+***SPINNAKER***
+->Spinnaker is an open-source continuous delivery platform designed to help teams automate and manage the deployment of applications 
+to cloud environments. It is focused primarily on CI/CD pipelines and release management.
+->Spinnaker supports deployments across various cloud platforms, including AWS, Google Cloud, Microsoft Azure, Kubernetes, and more.
+->Spinnaker is perfect for teams looking for an advanced and flexible CI/CD tool for automating complex release workflows, 
+particularly in multi-cloud environments.
+
+
+
+***ISTIO***
+->Istio is an open-source service mesh that provides a layer of infrastructure to manage the communication between microservices 
+in a cloud-native application. It focuses on the operational aspects of microservice communication.
+->Istio is used primarily in microservice architectures to control, secure, and observe communication between microservices. 
+It’s particularly useful in cloud-native, Kubernetes-based environments.
+
+
+
+****DEMONSET & STATEFULSET****
+*Demonset ->it is a specific pod which was created on every single node of the cluster to get the logs and metrics of the nodes on the cluster.
+->uses to run background services for logs and metrics collections of nodes. 
+*Statefulset -> set of pods with unique,persistent identifiers and stable hostnames.used for stateful deployments on K8S cluster.
+
+****CLOUD FUNCTION****
+*Google Functions is a Function as a service as well as serverless service offered by GCP.
+->Run code in response to events occured.
+->Pay only for what you use -> pay for no.of invocations,invocation runtime,memory and cpu provisioned for cloud function instance.
+->Google cloud Functions has 2 versions :- first version as a basic version (1st Gen),2nd version is a latest version(2nd Gen) build on top of 
+cloud Run and Eventarc.
+->Event :- Upload objects to cloud storage
+->Trigger :-Respond to an event.which function to trigger when an event occur or happens.
+->Functions :- Functions take the event data and performs necessary action.
+FLOW OF FUNCTIONS = Event -> Trigger -> Function.
+->Events triggered from :
+*Cloud Storage
+*PubSub
+*HTTP/POST/GET/PUT/DELETE/OPTIONS
+*Firebase
+*Firestore 
+*Stack driver logging.
+*Cloud Functions uses cloud Run,Cloud build as background services.
+->event triggers when the changes made to cloud function code  and take the action to build new image of based on the changes
+and deploy the container again with the new image to cloud run.
+->Cloud Function 2nd GEN provided us new features where we can use upto 16GB Memory per function invocation & 
+60 minutes timeout for http request and has a feature to manage traffic b/w older version and new version revisons of services 
+or deployments and 1000 concurrent requests or invocation are handled by a single function instance at a time in Gen2 Function.
+Note :- Revisions are nothing but the versions.
+
+
+
+**** CLOUD RUN****
+->Container to production in seconds.
+-> No cluster is  needed.
+->it is build on top of knative.
+->it is a fully managed serverless service.
+->Cloud Run integrates with code editor,code build,cloud monitoring & Logging.
+->we can deploy our workloads to anthos cluster by cloud run
+->Anthos is a managed cloud run service where we can deploy containers on Anthos cluster.
+->Cloud Functions uses cloud Run,Cloud build as background services.
+->event triggers when the changes made to cloud function code  and take the action to build new image of based on the changes
+and deploy the container again with the new image to cloud run.
+
+
+****Cloud Storage****
+*Cloud storage offers three different types of storages
+*Block Storage -> Block storage is noting but a hard disk, persistant disk attached to your instance.
+-> one Block Storage device can be attached to multiple instances.but only one instance can write,while other instance is only for read operation.
+->Multiple Block Storage devices can be attached to single instance.
+->Some of the cloud providers also exploring the feature of multi write block storage feature, where the block storage device is connected
+to multiple instances and all the connected instances can perform both read as well as write operations. 
+->These block storage devices can be connected as DAS -> similar to hard dsik, SAN -> no.of block storage devices of pool connected to the instance
+via network.
+->Google Cloud offers local SSD and persistant disk as a block storage.it is a network attached Block storage like SAN. any instance can  connect to this
+block storage even it is on other host through a network.
+->Persistant disk consists of os image attached to your instance and also can additional persistant disc as well
+->Persistant disk are of two types such as : (1).Zonal disk.(2).Regional disk
+->(1).Zonal disk -> data is replicated only to single zone of a specific region.
+->(2).Reginal disk -> data is replicated to all the zones or multiple zones of a specific region.
+*Local SSDs -> there are present on the same host where your instances was installed. these are local to your instances.
+->Local SSDs are not available for some machinetypes such as E2 machinetypes.
+->Local SSDs are physically attached storage disks to the host of the instances.it is used to store temperory data.so it is ephemeral storage.
+->it will deleted when a vm is terminated.it supports SCSI and NVME interfaces.
+*File Storage ->when we need to share data to others then we use a file sharing system.At the time we use file storage.
+->GCP offers File Storage as a File Store.
+->File Store is an instance of  with fully managed network attached storage system.we can use this with compute instances as well as
+Kubernetes instances also.
+*Object Storage ->it is a cloud storage where we can store any format data in the buckets in the object level.
+->Object Storage means data consists of meta data.
+->it is serverless and infinite scale,durable.
+->In Object Storage we are treating entire object as a single unit.we can set access controls at object level.
+->data is stored in the bucket as key-value format.
+->We can store unlimited objects in a bucket.but the maximum size of  object should be 5TB.
+->Object storage different types of storage classes to store data with minimal cost such as :
+->Standard class (default class) -> data can be stored and retrived quickly whenever we want.
+->Nearline Storage Class -> data can be stored and retrive once in a month.
+->Coldline Storage Class -> data can be stored and retrive once in a three months (quarter)
+->Archive Storage Class -> data can be stored and retrive once in a year.
+->We can store objects with no minimum size in these storage classes.
+->99.95% committed SLA for multi-region and 99.9% for single-region for all storage classes.
+*Versioning is used to get backup of objects.if the object is deleted by mistake.Live version is the latest version of bucket versioning.
+->we can use versioning at bucket level.
+*Object LifeCycle Management -> it is used to manage objects lifecycle automatically by switching or 
+storing the objects in b/w different storage classes and deleting them after a certain period of time based on the given conditions.
+
+
+****IMAGE VS MACHINE IMAGE Vs VM Template****
+*Image -> Image contains the Os of the Vm and Image is created from a boot disc or from a persistant disc.
+*MachineImage-> Machine Image is created from the Vm and Machine Image contains all the Vm configurations and metada data (bootstrap data).
+and it also contains the data of the Vm's which is stored in a persistant discs.we can use Machie  Image for data backup's of the Vm as well.
+*Vm Template -> Vm Template consists of only the Vm configurations.By using Vm Template we can clone the Vm.but the data storaed in the original Vm
+cannot be clonned to the new Vm.we can't use Vm Template for Vm's data backup.
+
+****Google Cloud IAM****
+*it is used to provide authorization and authentication of users and non-users as well.
+->Google Cloud IAM is different from other cloud providers.
+->It has Roles -> set of permissions to perform specific actions on specific resources.
+->Roles doesn't care about members.it's all about the permissions.
+->To assign permission to a member we called it as a policy binding.
+->Policy means -> binding(Assigning)a role(set of permissions)to a member.->To assign a role to a member we need to create a policy and 
+bind it to a particular member then only he can perform required action on specified resources.
+->IN GCP There are 3 types of roles :
+->(1).Basic Roles or (primitive roles)-Owner,editor,Viewer -> these basic roles are not recommended to use in prod.
+->Predifined Roles -> Finegrained roles are pre-defined and managed by Google.it offers different role for different resources
+ex:Storage object viewer,Storage object Admin e.t.c.
+->Custom Roles -> When predefined roles are not sufficient, we can create our own custom rules.
+->Permissions cannot be assigned directly to member.first we need to group a set of permissions and assign them into a role.then bind that role to a
+member this is known as policy.
+->Member can be user,principal,identity, service account,domain or group.
+->service accounts are used to assign roles to resourcers to communicate or access the other resources.
+Ex:- When an application on a Vm needs access to cloud storage then we can use service accounts to give access to Vm to access cloud Storage.
+->Service accounts don't use passwords they make us of public & Private Key.
+->Service accounts has mail id but we cannot use service account to login via ssh or browser.this account is assigned to a Vm and then
+this Vm will make use of it to access the required resources in the Google Cloud.
+
+*Types of service Accounts -> 
+->Service Account is both identity and a resource.where we can attach a role with service accounts to resoruces as well as.As a service account admin
+we can let others members access a service Account by granting them a role as(Service Account editor) on the sercice account
+(1).Default Service Account -> Automatically created when some services are used.it is not recommended in prod because it has editor role by default.
+(2).UserManaged-Service Account -> We can create our own service accounts.These are recommended.because they provides fine-grained access control.
+once the account is created we can assign the account to the Vm to access the required resources by it.
+(3).Google Managed Service Account ->These accounts are created and managed by Google to perform operations on behalf-half users
+->How ON-Prem instance application will access the Google cloud storage from On-premises -> it is by assigning service account to the 
+On-prem instance with right permissions and by creating a service account user managed key and adding it to the service account and using
+it for authenticate ourself as a service account to the specific service that we would want to access.we can do this easily by dowloading the key
+to the specific location and setting the location path of downlaoded keyfile to "Google_App_Credentials" environmental variable by export command.
+Inside the Instance APPlication of on-prem install the Google cloud client libraries.This library uses a default library called Application Default
+Credentials(ADC).These credentials library used App of on-prem to authenticate themselves to any resources in Google Cloud.(In this case it is storage). 
+This process is for long-lived authentication.
+->Short Lived Authentication ->
+In short-lived authentication we make calls to the services in Google Cloud via Google Cloud APIs from ON-prem APPs.
+->for this there are few credential types such as : 
+(1).OAuth2.0 access tokens :-it is used for a member to authenticate his policy binded role to access certain services in Google Cloud in a privilaged manner.
+(2).OpenIDConnectIDtokens :- This is used for a service to service authentication. where a instance wants  to access storage bucket in google cloud.
+(3).selfsigned JSON Web Tokens(JWTS)
+->IAM best practices -> Give least possible privillage needed for a role.->need to use fine-grained roles
+->if we want to create an email to create a project then enterprises should prefer using Google workspace.
+->we can use google workspace to manage users(groups etc.)and to link google cloud organization with google workspace.
+->if the organization is using the identity provider of it's own.we can federate google cloud with your identity provider.
+->*Corporate directory Fedaration* :- Federate cloud identity or google workspaces with the external identity provider (Idp) such as
+Active derectory or Azure Active directory.
+->We we are using Federation.we can also use single-sign-on -> users are redirect to an external idp to authenticate.
+->when users are authenticated, via external Idp .This external Idp assertion is sent to google-sign-in.by this users can login 
+to their Google cloud paltform accounts.
+->We can federate our external Idp's (Active directory) with cloud identity by using google cloud directory sync (GDCS) and 
+Active directory Federation services(AD FS).
+****IAM IDENTITIES AND MEMBERS**** :- 
+->Google Account - Represent a Person (email-id). 
+->Service Account - Represents a Application Account.
+->Google Group :- collection of users or collection of service-accounts as a group.
+->Google Group :- whenever we create a group.an email-address is assigned to it.
+->By using Groups we can manage account permissions at one-place.->it helps to apply access policy.
+->Google Workspace Domain -> Google workspace (formerly G-suite) Provides collabration services  for enterprises.
+ex:- So,Tools like G-mail,Calender,Meet,Chat,Drive,Docse etc are included.
+->We can aslo manage permission by google workspace domain.
+***->Cloud Identity Domain -> Cloud Identity is an identity as a service solution that centrally manages users & Groups.
+->***Organization Policy Service ** ->By enabling Centralized Constraints on all resources created in an Organization.
+we can disable creation of service accounts,resources in a sepcific region. e.t.c 
+by configuring the organization policy by centralised constraint's.-> by this policy nobody in the account can 
+crate a resource in a specific region.
+->To do this we need a Organizationpolicyadministratorrole.
+-> IAM focuses on WHO ? and where as Organization Policy focuses on what.-> What can be done on specific resource.
+->IAM policies can be applied to any hieracy level such organization,folders,projects,resources.
+->Resources inherit the policies of all levels.
+->we cannot override or deny the policies at lowerlevel if the policies is assigned at higher-level
+
+****ACCESS CONTORL LIST 🆚 IAM****
+->it defines who has access to the resources to customize accesses as well as what level of access do they have.
+->How is it different from the IAM -> IAM permissions apply to all objects in a bucket.it means we can't edit the access at object-level
+where as ACL provides a customized access to individual object.here we can customize accesses to user who can access specific objects.
+->it means we can use IAM to provide common permissions to access all objects in a bucket.where as we can use ACL to give permissions to customize 
+access for an individual object in a bucket.simply with ACL we can edit accesses to members to access the objects.
+->However users can access resources either they are allowed by IAM or ACL.
+->Cloud signed URLs -> if we want to allow a user for a limited period of time to resources with out google account.then we can use
+->Cloud signed URLs -> it provide access to the user for a limited period of time to perform specific actions.
+->Create a key for the service account/user with desired permissions and create a signed URL with that key to provide limited with out google account.
+
+****DATABASES****
+->Database Provides Organized and persistant storage for your data.
+->To choose required database among different databases.we need to consider and understand the following things :
+(1).Availability:- how long our data will be available via databases.whenever I want I can access data 4 nine's
+->To Achieve high availability we need to maintian multiple standby of databases across multiple zones & regions.
+(2).Durability :- how long our data will be stored and available with out any data loss - 11 nine's
+->To maintain durability without any dataloss -> create a standby database make synchronous replication connection with the main database
+and take a snapshot every hour of the standby database and  also make use of transactional logs of main database and create a process to copy the logs
+to the standby database and apply the transaction logs to the snapshot created from standby to get complete database without any data loss.
+by this process we don't lose single bit of data.
+->RPO and RTO are the technical terms to measure the Availability and Durability.
+(3).RTO :- Recovery time objective :-maximum acceptable downtime.
+(4).RPO:- Recovery Point Objective :- Maximum Acceptable period of dataloss.
+-> Achieving minimum downtime(RTO) and minimum data loss(RPO) is always expensive
+->if we nedd less RPO and RTO go with HOT standby -> it is a standby automatically syncronize data from master db and ready to pick up load
+by using automatic failover mechanism shifting from master to standby.
+->if we nedd less RPO and Minimum RTO -> Go with Warm standby -> it is a standby automatically syncronize data from master db and need some time
+to scaleup and picking up load.it reduces some cost compared to Hot Standby.
+(5).consistency :-we can maintian data consistency by syncronous replication b/w master db and standy,replicas.
+->Eventual Consistency -> it means the replication connection b/w master db and standyby,replicas is asynchronous.there will be a little lag to get
+consistent updates on all the connected standby db's and replicas.consider it when scalablility is imp than data integrity.
+(6).Transaction speed :- Increase transactions speed by diverting the throughtput operations to read replicas and vertically scaling up the db.
+creating db cluster.it is very expensive to create db cluster.
+Read Replicas -> read replicas are useful to perform read only operations from APP & Users and also we can upgrade replicas to master dbs incase of 
+failure of master db's.but this feature is availble only for some db's.
+
+****TYPES OF DATABASES****
+*Factors needed to be consider to choose a correct suitable databases among different databases :
+(1).fixed schema or schema less or semi schema -> it means structured db,unstructured db,combination of structures and unstructured db.
+(2).Transactional properties -> atomicity and consistency 
+(3).latency 
+(4).Transactions per second (I/OPS) speed 
+(5).data storage capacity 
+
+->Relational DATABES TYPES
+(1).Online Transactions Process Database
+(2).Online Analytics Process Database
+-> Main difference b/w OLTP and OLAP is how they store the data.
+*OLTP -> OLTP database uses row Storage.each table row is stored together.Efficient for small transactions.
+*OLAP -> OLAP databases uses columnar storage.each table column is stored together.benifit of using columnar storage is we will get
+high compression,so that we can store petabytes of data efficiently and we can distribute data easily and store them in different dbs of a cluster.
+this hepls us to execute a single query across multiple dbs of a cluster.
+*Online Transactional Process databases(OLTP) -> > when you prefer transactional performance. -> Cloud Spanner,Cloud SQL.
+->Cloud SQL :- it is a traditional db.Supports postgresql,my sql and sql server for regional relational databases and 
+can have storage capacity upto 64TBs.useful small transactions in large scale.
+->Cloud Spanner - spanner for high data storage capacity upto multiple petabytes of data and 99.999% availability.it is recommended
+for Global Applications (multi regional(Global)) db with horizontal scaling (high cpu and ram and memory).
+*Online Analytical Databases(OLAP) -> When you prefer Analytics over transactions.it means we can analayse petabytes of data -> Bigquery.
+ex:-data warehouses.Business Intelligent Applications (Power BI,Excel).BigData work loads.
+->Data is consolidated from multiple db's in OLAP databases.
+->Bigquery->it is a petabyte scale distributed dataware house.complex queries can be executed efficiently.
+->Serverless databases -> Cloud Spanner,Big query -> Relational databases.Cloud Firestore -> NoSQL database.
+->Columnar databases -> Bigquery ->Relational database.Big Table->NoSQL database.
+*** Relational DATABASES Vs No SQL Databases :-
+-> Relational databases -> provides storng consistency and SQL features.
+-> No SQL databases-> They don't have as storng consistency compared Relational Databases.Most of them do not provide SQL features.instead of these two
+they offer and achieve sacalability and high performance and somewhat strong consistency by tradeoff strong consistency and sql features support.
+->Doccument & Key-value pair databases -> Nosql databases is preffered.No sql means Not only sql.-> Cloud Firestore,Cloud Big Table.
+*No Sql provides fxelible schemas(Schema less)(semi-schema).schema evolves with time based on applications requirements.
+->We can horizontally scale to petabytes of data with Millions of Transactions per second(TPS)
+->This NoSql dbs provides scalability and high performance as well as strong consistency.
+*Cloud (Datastore) ->it is a No SQL managed serverless documment database
+->Provides ACID Transactions,Sql -like queries,indexes.Strong consistency & mobile and web client libraries.
+->By using Cloud firestore we can access a database from a mobile applications and web applications.
+->Cloud Firestore is recommended for small and medium databases scales upto few TBs.
+*Cloud BIgTABLE ->it a managed and scalable NoSql wide columnar database.but it is not serverless,we have to 
+create an instance to create tables.Recommended when we have more than 10 TB data to petabytes data and also recommended for large analytical
+and operational workloads & streaming workloads.but it is not recommended for transactional workloads.
+beacuse it supports only single-row transactions.not supportmultirow-transactions support.
+->Graph databases -> to stores graphical data.
+->In-memory databases -> used as cache database.-> Memorystore.-> memecache -> for temporary data,reddis ->for persistant data with low latency.
+->Retriving data from memory is much fatser than retring from disk.In-memory databases like Redis delivers micro-latency by storing persistant data
+in memory.
+->Memorystore :- GCP offers In-memory database as a memorystore.it stores the data in memory for a temporary purpose.
+->Usecases -> caching sessions.by putting the memorystore infront of the database we can improve performance of an 
+application by getting response in microseconds.
+
+
+****Cloud PubSub for Asynchronous communication****
+->we can use cloud Pubsub for decoupling microservice applications by asynchronous communication.
+->Why do we need asynchronous communication instead of synchronous communication.
+->EX:- Applications on a web-server makes synchronous calls to or sends (messages to) logging service. In the below diagram we can see that the logging 
+service is writing logs to the database. and the webserver app whenever it needs to write any logs it makes syncronous calls to logging service.
+if the logging recieves to many calls then the logging service go down.if logging service went down then whole Application will go down.
+so to avoid this downtime and servicedown issue asynchronous communication by pubsub comes into picture.it decouples the application with 
+logging service by adding topic  b/w the application and logging service.So,now application will send or put messages to the topic.application is a
+publisher.whereas the messages will be pulled by logging service from topic.here logging service is a subscriber.To pull messages or access messages
+subscriber needs to subscribe the topic.if too many messages are coming from App to topic.it will store them till days.so by this logging service can easily
+process the messages.if there are too many messages in the topic we can scale the logging services to process the messages.This is how pubsub decouples the
+applications.it make the apps or microservices independent of oneanother and provides high availability.
+
+Application on a webserver ----> Logging services -----> Database. => Application on a webserver ----> Topic --->Logging services -----> Database.
+
+->PUBSUB HOW DOES IT WORK ACTUALLY :
+*Publisher -> a publisher is like a sender(owner) who or which sends the messages to topic by making Https requests to pubsub.googleapis.
+*Topic -> Topic is like a mediator b/w publisher and subscribers.which stores the messages till subscriber pulls the messages from it and aslo
+pushes the messages automatically to the subscriber.
+Subscriber -> A subsriber is like a  reciever who recieves the messages from the Publisher through topic.
+Messages from the topic can be recived in two ways either by push or pull.To recieve messages from topic the subscriber should subscribe the topic.
+->Pull -> A subscribe can pull the messages from topic when it is ready to process the message.Subscriber makes Https request to pubsub.googleapis.com
+to pull the message from topic.
+->Push -> Messages are sent directly to the subscriber from the topic.Subscriber provides a web hook endpoint at the time of registration to topic.
+whenever a message is recieved from publisher to topic.A http post request will be sent to the web hook endpoints.
+After successfully receiving message from topic to the subscriber.subscriber will send an acknowlegdement back to the topic.so topic will delete specifc 
+message from specific subscription of where the acknowledged  subscriber is in.
+->Note -> In a single subscription there might be mutliple same subscribes will present.topic will distribute the  message among them and it will not delete 
+the message until it get acknowledgements back from all the similar subscribers of a specific subscription.
+
+****LITE PUB AND LITE ZONAL****
+->these are only limited to zonal level.it means it is a zonal messaging service and they are cheap in cost compared to pubsub and subscriber.
+->We can only take snapshots of a subscriptions.snapshot is a point in time status of a subscription.it captures the message acknowledgement state
+of a subscription at a given time.
+
+
+****GOOGLE CLOUD VPC NETWORK****
+*Virtual Private Cloud is a  own isolated network in GCP.
+->Network traffic within vpc is isolated from all other GoogleCloud VPCs
+->We can fully control all the traffic coming in and outside a VPC.
+->Create all the resources within the VPC and secure resources from unauthorized access and enable secure communication b/w our cloud resources.
+->VPC IN GCP is a GLOBAL Resource and contains subnets in one or more region.where as VPC in AWS is regional and containes subnets in one or more zones.
+->VPC is not tied to a region or zone.Vpc resources can be in any region or zone.
+->Why do we need to use subnets ? ->many resources are created within cloud.but they not accessable directly to the user over internet.
+->EX:- Instances and databases can be directly accessed by the user from internet.they can access them thorugh load balancer from internet.
+->where as innstances and database resources will be created in a subnets which are private and load balancers are created in public subnets
+which are accessable directly by user over internet.only applications and resources created within the Vpc can be able to access the resources in private 
+subnet.
+->So, subnets are useful to seperate public resources from private resources inside a VPC.
+->So, we need to create seperate subnets.where public resources will be created in a public subnet and private resources will be created in private subnet.
+->from outside the VPC or from other VPC's projects of Cloud cannot access the private resources which are in private subnets.
+but subnets (public)can access the private subnets within the VPC network.
+->we can also create subnets to distribute resources across multiple regions for high availability.each subnet is associated with a specific region.
+if we want to create compute instances in multiple regions then we can create multiple subnets and can create each of the instance in each subnet.
+so,it means we have created compute instances in multiple regions.
+->By default,every project has a default VPC.However we can also create our own VPC.to create VPCs we have two options such as :
+(1).Auto mode VPC network :-when we'r using automode vpc network along with VPC.then subnets will be automatically created in each region.
+->default vpc created in the projects uses Automode VPC network.
+(2).custom mode vpc network :-when we'r using this.no subnets are automatically created.we will have complete control over subnets and thier ip addresses.
+->it is recommended to use in Prod.
+*Enable Private google access :- we have to use this to connect our resources to googleAPis with private Ip's or internal Ip's.by using 
+internal or  private IP's the communications happends b/w the resources within the VPC network.
+*Enable Flowlogs :- use flowlogs to check the incoming and outgoing traffic and to troubleshoot any VPC network related issues.
+***(CLASSLESS INTER-DOMAIN ROUTING)BLOCKS*** :
+->CIDR BLOCK defines the IP ranges.->CIDR BLOCK express a range of ip addresses that resource in a network can have.
+*Resources in a network use continues IP addresses to make routing easy.
+EX:-A VM Resoruce inside a specific network can use IP addresses range of 69.208.0.0/28 
+->CIDR BLOCK consists of a starting IP address(69.208.0.0)and a range(/28)
+->How to find how many Ip addresses available for this VM Resourece.follwow the below steps.
+->Each IPV4 IP Address is in the format of 32 bits. or 4bytes -> 8 bits = 1 byte.
+->69.208.0.0 ->it has 4 bytes.convert the decimal number to binary  format.where each byte has 8bits in binary.
+->01000101.11010000.00000000.00000000 -> this is the binary format of 69.208.0.0.
+->The given range for Vm resource is /28 => it means 28 bits of Ip address which is 69.208.0 is reserved for the network part
+->do subtraction of 28 from 32 = 32-28 = 4bits.where these 4 bits of Ip address which is half of 0 block of right side.
+->so we have  only 4 bits available for the vm ip address range. so calculate right side 4 bits  = > 8421 = 15.
+->So the range is from 69.208.0.0 to 69.208.0.15  = total IP address are 16 from 0 to 15 
+->so total of ip address available are 16  from 69.208.0.0 to 69.208.0.15. but 1st IP address 69.208.0.0 is uses network itself beause it is a
+network address.not usable by vm. and last last IP address 69.208.0.15 is used by broadcast beacuse it will be considered as a broadcast address.
+used to send messages to all devices or resources within the network.so it is also not usable by the Vms.
+->So, the remaining available IP addresses are of 14 total those are from range 69.208.0.1 to 69.208.0.14. these can be used by Vms.
+NOte :- difference b/w 0.0.0.0/0 and 0.0.0.0/32 -> 0.0.0.0/0 has a range zero so it indicates all ip addresses.whereas 0.0.0.0/32 has a range 32
+it means 32-32 = 0. so it indicates only one ip address that is 0.0.0.0
+***TIP --> do subtraction of given range from total no.of.bits of the IPV4 format.i.e;32. 
+ex:- 69.208.0.0/28 -> range is 28 = 32-28=4= used 2 as a base because binary format has a base 2.
+2^4(2 power 4) =16 =16-2(0th and last ip address is not usable by host so subtarct 2 from total)=14.
+
+****FIREWALL RULES****
+->Firewall rules are stateful -> it means if incoming traffic is allowed then the outgoing traffic aslo be allowed in-response to it.
+->Each firewall rule has assigned a priority from 0 to 65535.where 0 has highest priority and 65535 has lowest priority.
+->Default implied rule is present with lowest priority(65535) to allow all egress from inside the network all external traffic is allowed to internet.
+->Default implied rule is present with highest priority (0) to deny all ingress into the network from outside.
+->These default rules cannot be deleted.but we can override them by definying new rules with priority(0-65534).
+
+****Shared VPC****
+->When resources of  one specific project wants to talk or access to (the) other project resources of the organization via internal IPs.securely
+->we can use shared VPC for this case.
+->shared Vpc is created at organization or a shared vpc folder. to create a shared vpc folder we need a vpc admin level role.
+->Shared vpc contains one host project and multiple service project -> here host project is a shared vpc folder 
+and projects attached to it are service projects
+->Network administrators are responsible for the host projects and the resources used by the service projects.
+
+****VPC NETWORK PEERING****
+->Connects network in same projects,different projects of different organizations can be peered with one another.
+->All Communication happends b/w the resources securely and efficiently by internal IP's
+->benifit is that there is no data transfer charges between services by transferring using internal IP's.
+->Network administration is not changed. -> it means network admin of one vpc do not get the role automatically in a peered networks.
+
+****CLOUD VPN****
+->It is used to connect on-premesis network to cloud network via cloud VPN. -> it is possible by implemnet IPSEC VPN Tunnel.
+->Traffic goes thorugh internet -> it means the traffic is public but secured by encryption of traffic suing internet keyexchange protocol.
+->Two Types Cloud VPN's are available :-
+->(1).HA(High Availability VPN)-> offers SLA  of 99.99% service availability with two external IP addresses.->it supports only dynamic routing.
+->it does not supports static routing.
+(2).Classic VPN -offers SLA of 99.9% service availability with single external IP address.it supports both static and dynamic routing
+
+****CLOUD INTERCONNECT****
+->Another way connect on-premesis network with the cloud network physically.it provides high speed connectivity 
+and HIgh Availability,high throughtput.
+->Two Types of interconnects are possible :-
+(1).Dedicated Interconnect -> it is available in 10gbps and 100gbps configurations.-> requird for high speed connections
+(2).Partner Interconnect -> This is a shared connection and is available in 50mbps and 10gbps configurations.->required for low and moderate connection.
+->Data exchange in the case of interconnect happends through a private network.whereas in cloud VPN data exchange happens through public network(internet).
+->communicate using VPC network's internal IP addresses from on-premesis network.-> it reduce egress cost because traffic goes to a private network as
+public internet is not used.
+->Cloud interconnect also allows to access supported google API and services privately from on-premises applications.
+->use cloud interconnect only for high bandwidth where as for low bandwidth use cloud VPN.
+
+****DIRECT PEERING****
+->Direct Peering is not a GCP service.it is a lowerlevel network connection outside of GCP.it is not recommended anymore.
+->it is used to connect customer networks to cloud network using network peering.
+-> it is a direct path from on-premises network to google services.
+
+****CLOUD MONITORING OPERATIONS****
+-> To operation cloud applications healthy and keep the cloud infrastructure healthy we need to monitor the cloud.
+-> Cloud Monitoring is a set of tools to monitor the cloud infrastructure.
+-> By defining the alert policies(it can be defined by conditions) we can get the alerts whenever there is an issue in application or infrastrucutre.
+->We can specify the channel in which a specefic notification has to be sent
+->CLOUD WORKSPACE ->  to gather the metrics of projects by cloud monitoring we need a cloud Workspace.where we can add multiple projects of different 
+cloud providers into a single workspace and  can get the metrics of the  projects  
+->Workspaces are needed to organize monitoring information.workspace allow us to see monitoring information from multiple projects.
+->steps to create workspace -> (1).Create workspace in a specific project.(Host project)
+                            -> (2).Add all the projects to the workspace.
+->FOR VM's default metrics monitored include :
+*CPU UTILIZATION.
+*Some disk traffic metrics
+*Network traffic metrics
+*Uptime information.
+->we have to install cloud monitoring agent for other metrics such as : memory utilization.disk,cpu,network and process metrics.
+->Cloud monitoring agent is based on CollectD-based daemon.
+->monitoring agents gather metrics from VM and sends them to the cloud monitoring
+
+****CLOUD LOGGING****
+->In the cloud we have many apps and services.there are many logs coming out from apps and services and there might be lot of logs
+coming in from different actions that users are performing the cloud.all the logs from the all the actions is centralized and captured
+in google cloud in cloud logging.
+->cloud logging is a real time log management and analysis tool.
+->it allows us to store,analyse,search,alert on massive volumes of data.
+->it is exabyte scale and fully managed service.-> no need to provision servers to store logs.patching updates
+->we can ingest log data from any source.
+->important features of cloud logging are :
+*Logs explorer :- search,sort,analyse using flexible queries.
+*Logs Dashboard :- we can get visualization around the logs by using Logs dashboard.
+*Log metrics :- we can also generate metrics from the logs and capture important necessary metrics by using queries and matching strings.
+*Logs Router :-we can look at different log entries and can route them to different destinations
+->Most GCP Managed services automatically send logs to cloud logging :
+*GKE,CLOUD RUN,APP ENGINE.
+->if we want to ingest logs from GCE VM's we need to install Logging agents.this agent is based on fluent-D.
+->These agents capture the logs from the VM and send them out to cloud logging.
+->to ingest logs from on-premesis VM's and send them to cloud logging.we have to use blind-plane tool from blue medora.
+->also we can use cloud logging API's to send logs from on-prem to cloud logging.
+
+***CLOUD LOGGING-AUDIT AND SECURITY****
+->Access Transperancy Log :- Captures actions performed by GCP Team on our content.but not supported by all sercies.
+*CLOUD AUDIT LOGS are 4 types.
+->Cloud audit logs answers of who did what,where,when.
+(1).Admin Activity logs :- logs for api calls or other actions that modify the configuration of resources. ex:- Vm creations,changes in IAM permissions.
+(2).Data Access Logs :- logs for  Reading configuration of resources.-> the logs are not enabled by default.ex:-somebody trying to List resources.(VMS,images)
+(3).System Event Audit logs :- logs for  Googlecloud administrative actions.ex:- logs genearted for events like host maintenance,Automaticrestarts,
+Instance preemption.
+(4).policy denied Audit logs :- logs for when user or service account is denied access.ex:- security policy,violation logs.
+-> To access all types of logs we need a Project/viewer role permission.
+
+-> ALL THE LOGS WILL BE STORED IN THE BUCKETS BY LOG ROUTER.
+->PROCESS-> CLOUD logging API's sends logs from resources to log router.log router checks the logs against rule.which logs should be store and discard.
+->all the selected logs will be ingested to cloud buckets. cloud logging buckets are of two types :
+(1)._Required_Buckets :- it holds access transparency logs,admin activity logs,system events logs upto 400 days.retained after 400 days.
+->it has zero charges,we cannot delete this bucket and cannot change retention period as well.
+(2)._Default_Bucket :-All the other logs retained after 30 days.billed based on cloud logging billing.
+->we cannot delete thi bucket as well.but we can disable the log route to ingest the logs to this bucket.we can edit retention from 1 to 10 years b/w.
+->we can also export logs to other services such as BigQuery,PUBSUB,cloud storage.
+-> we can store logs in bigquery by creating datasets and in pubsub in encode65.
+->Logs are ideally stored in cloud logging for a limited period.
+->To export logs we need to create exportsinks in cloud logging to the destinations using log router.
+->we can use include and exculde filters to limit the logs.
+-> logs are used to trouble shoot the problems of the resources.
+
+***CLOUD TRACE****
+->Microservices archetecture has multiple microservices involed in a single request.
+->To Trace a request across multiple microservices and across multiple google services we can use Cloud Trace.
+->it is a distributed tracing system for GCP.we can collect latency data from supported google cloud services & instrumented applications.
+by using cloud trace API.
+->if we want trace the request across microservices.we need to instrument the microservices using the tracing libraries.
+->By using cloud Trace we can find out how long does a service take to handle the requests.or avarage latency of the request.
+-> Cloud Tracing supports for GKE,GCE,APP ENGINE
+
+***CLOUD PROFILER*** 
+->To identify performance bootlenecks in production cloud profiler is used.
+->it continuesly gathers CPU  and memory usage from production systems.
+->we can connect profiling data which captured using cloud profiler with application source code directly.this will easily identify 
+performance bottlenecks directly in the source code.
+->Two major components of cloud profiler are :-
+*Profiling agent :- it collects the profiling information.
+*Profiler interface :- it provides the visualization around the information which is collected by profiler agent.
+
+****ERROR REPORTING****
+->it is ued to identify production problems in real time.
+->Real-time exception monitoring is a feature of Error-Reporting.->we can aggregate and display errors reported from cloud services.(using stacktraces)
+->These errors directly captured from stacktraces of the application.-> by this we can a specific error happends how many times and we can specific 
+exceptions which might need the attention.
+->error reporting provides a centralized management console.through this console we can identify and manage top or recent errors.
+->Use firebase crash reporting tool  for errors from Android and IOS client applications.
+->These errors can be directly reported by sending them to cloud logging or directly calling the error reporting API.
+
+****ORGANIZING CLOUD RESOURCES IN GCP****
+->In GCP there is a well-defined hierarcy to oraganize resources.
+->Organization -> Folder -> Project -> Resources.
+->Resources are created in different Projects.
+*Each Resource is associated with specific Project.
+*Projects help us to group the resources.
+->Projects are created in Folders.
+*Each Folder can contain multiple projects.
+->Folders are created in an organization.
+->Organzation can contain multiple folders.
+->We can create seperate projects for different environments ->it creates complete isolation b/w test and production environments.
+->Create seperate folders for each department ->This isolates production applications of one department from another.
+->if we have any shared resources we can create a shared folder and put them in it and can share the resources.
+->Good Recommendation is one project per application per environment.
+*EX:- Let's consider two apps: "A1 and A2" so we need two environments for each of Apps such as "DEV" and "PROD"
+where as in the ideal world we will create four projects:A1-DEV,A2-PROD AND A2-DEV,A2-PROD.
+Isolates environment from each other.so that any changes we made in Dev environment will not break changes in Prod ENV.
+->Grant all permissions to developers to dev environment.
+->Grant all permissions to operations team to prod environment.
+->In free-trail account we don't have the organizations and foleders.we can directly create projects.
+whereas in Enterprise account we have the organizations and folders.we can create organizations and folders,Projects,resources.
+
+****BILLING ACCOUNTS****
+->Billing account is mandatory for creating resources in a project. -> it contains the payment details
+->Every Project with active resources should be associated with a billing account.
+->Billing account can be associated with one or more projects.
+->We can have multiple billing accounts in an organization.
+->Billing Accounts are of Two types such as :
+->Self-Service :- Billed directly to credit card or Bank Account.
+->Invoiced-> These generates invoiced bill monthly to large enterpraises.
+->We can setup cloud billing budget alerts to recieve alerts on billing consumption.
+->The default alerts threshold set at 50%,90% and 100% can be received by pubsub.
+->We can also exports billing data on a schedule basis to big query.through we can do quesries or can visualize data.
+->To archive billing data can be moved to cloud storage bucket.
+
+
+****Google Cloud Deployment Manager****
+->If we want to provision resources and want to create VPC network,subnets,sql instance and  to create Testing,QA,DEV,PROD environments
+->All the above things can be done simply by using deployment manager with scripts.
+->By using Cloud deployment Manager we can automate the provisiong and avoid configuration drift.
+->Configuration drift means when we manually making changes to environment and we might have updated one environment without
+updating another environment.this is called configuration drift.
+->if the resources are created using deployment manager don't modify them manually.modify them with cloud deployment manager.
+->Cloud deployment manager is free to use -> but we need to pay for the resources provisioned.
+Deployment Terminalogy :-
+->Configuration file-> YAML file with resources definations for a single deployment.
+->Deployment :- is a Collection of resources that are deployed and managed together.
+->Manifest :-is a Read-only object containing original deployment configuration(including imported templates).
+***CLOUD DNS***
+->to buy domain names for the websites.->Google offering domain name services as Cloud DNS.
+->setting up the website content -> web hosting -> two types-> static content ->static hosting ->cloud bucket.
+->Dynamic content -> Dynamic hosting -> APP Engine or Kubernetes engine.
+->Route requests to domain name to the place where the website is hosted
+->Cloud ZONE :-we can create records of routing in the cloud Zones.
+->In the cloud DNS we can create public and private cloud Zones. ->Zones are nothing but the containers to store the records.
+->Public Cloud Zones are exposed to the internet.where as private zones are exposed to only specific VPC's.
+
+
+***CLOUD DATAFLOW***
+->Cloud data flow can be used to stream data by pipelines to  variuos destinations.
+->By Using Cloud data flow we can also perform batch-processing jobs.
+->Pub/Sub>Dataflow>BigQuery(Streaming).
+->Cloud Dataflow is based on open-source ApacheBeam framework.
+->it is serverless and autoscaling.
+->To run specific pipeline we are executing cloud data flow would automatically provision resources and tc of infrastructure.
+
+***CLOUD DATAPROC***
+->It is a managed hadoop and spark services.
+->if we want to get the intelligence from the data,ML and AI.
+->There are lot of frameworks present in this spark and hadoop ecosystem.
+ex:- Spark,Pyspark,SparkR,Hive,SparkSQL,Pig,Hadoop.->All these jobs can be run using dataproc.
+->Typically Sparc and Hadoop are used to perform Complex batch-processing.
+->When we are using spark and Hadoop,we typically has a cluster and with dataproc we can create multiple cluster nodes.
+->EX:- Single node cluster,standard node cluster,High Availability cluster.
+->High Availability cluster has 3 masters -> if one of the master is down.the process will still continues.
+->Dataproc uses VM's
+->Cloud Dataproc is a data analysis platform ->When we are exporting something -> actually exporting the cluster configurations.it not the data.
+->Comparable alternative to datproc is Bigquery ->EX -> We have petabytes of data and we would want to do analysis on it using squel queries -> BigQuery.
+->Whereas our requirement is more than SQL queries then we can go for DataProc.EX -> Building complex Applications to do the intelligent analysis.
+->If we want to do complex batch-processing for machine-learning or AI workloads.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
