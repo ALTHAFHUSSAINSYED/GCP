@@ -1,0 +1,95 @@
+provider "google" {
+zone = "ZONE"
+region = "REGION"
+project_ID = "PROJECTID"
+}
+
+resource "google_compute_network" "vpc_network" {
+name = "terraform-network"
+}
+
+resource "google_compute_instance" "Vm_instances" {
+name = "terraform_instance"
+machine_type = "e2-medium"
+
+boot_disk {
+ initialize_params {
+image = "debian-cloud/debian-11"
+}
+}
+
+netowrk_interface {
+network = google_compute_network.vpc_network.name
+access_config {
+}
+}
+}
+resource "google_compute_instance" "vm_instances" {
+name = "terraform-instances"
+tags = ["web", "dev"]
+#..
+
+boot_disk {
+initialize_params {
+image = "cos-cloud/cos-stable"
+}
+}
+}
+
+resource "google_compute_address" "vm_static_IP" {
+name = "terraform_static_IP"
+}
+resource "google_compute_instance" "vm-instances" {
+name = "terraform-instances2"
+
+boot_disk {
+initialize_params {
+image = "cos-cloud/cos-stable"
+}
+}
+
+network_interface {
+network = google_compute_network.vm_instaces.self_llink
+access_config {
+nat_ip = google_compute_address.vm_static_IP.address
+}
+}
+
+resource "google_storage_bucket" "terraform_bucket" {
+name = "terraform_bucket"
+location = "REGION"
+wepsite {
+main_page_suffix = "index.html"
+not_found_page = "404.html"
+}
+}
+
+resource google_compute_instance" "vm_instances" {
+depends_on = [google_storage_bucket.terraform_bucket]
+name = "terraform_instance2"
+machine_type = "e2-small"
+zone = "ZONE"
+tags = ["web", "dev"]
+
+boot_disk {
+initialize_params {
+image = "cos-cloud/cos-stable"
+}
+}
+
+network_interface {
+network = google_compute_network.vm_instances.self_link
+access_config {
+}
+}
+}
+
+resource "google_compute_instance" "vm_instances" {
+
+name = "terraform_instance"
+machine_type = "e2-small"
+provisioner "local-exec" { 
+ command = "echo $(gcloud_compute_instance.vm_instance.name): $(google_compute_instance.vm_instance.network_interface[0].access_config[0].nat_ip)>>ip_address.txt"
+}
+#..
+}
